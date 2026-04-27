@@ -38,19 +38,21 @@ export function JoinClassForm({ studentUid, onJoined }: JoinClassFormProps) {
   }
 
   return (
-    <form onSubmit={handleJoin} className="flex gap-3">
-      <Input
-        value={code}
-        onChange={e => setCode(e.target.value)}
-        placeholder="Enter join code (e.g. ABC123)"
-        required
-        className="flex-1"
-      />
-      <Button type="submit" loading={loading}>
-        Join
-      </Button>
-      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
-      {success && <p className="text-emerald-400 text-xs mt-1">{success}</p>}
+    <form onSubmit={handleJoin} className="space-y-3">
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Input
+          value={code}
+          onChange={e => setCode(e.target.value)}
+          placeholder="Enter join code (e.g. ABC123)"
+          required
+          className="flex-1"
+        />
+        <Button type="submit" loading={loading} className="sm:w-auto w-full">
+          Join
+        </Button>
+      </div>
+      {error && <p className="text-red-400 text-xs">{error}</p>}
+      {success && <p className="text-emerald-400 text-xs">{success}</p>}
     </form>
   )
 }

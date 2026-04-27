@@ -3,7 +3,7 @@
 import { useAuth } from '@/hooks/useAuth'
 import { Topbar } from '@/components/layout/Topbar'
 import { StatsCard } from '@/components/dashboard/StatsCard'
-import { Card, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import Link from 'next/link'
 
 export default function AdminDashboard() {
@@ -17,7 +17,7 @@ export default function AdminDashboard() {
         subtitle={`Welcome back, ${firstName}. Here's your school overview.`}
       />
 
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-8 space-y-8">
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard

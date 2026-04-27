@@ -5,6 +5,26 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { signOut } from '@/lib/firebase/auth'
 import { useRouter } from 'next/navigation'
+import { createContext, useContext, useState } from 'react'
+
+// Shared context so Topbar can toggle the sidebar on mobile
+export const SidebarContext = createContext<{
+  open: boolean
+  setOpen: (v: boolean) => void
+}>({ open: false, setOpen: () => {} })
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <SidebarContext.Provider value={{ open, setOpen }}>
+      {children}
+    </SidebarContext.Provider>
+  )
+}
+
+export function useSidebar() {
+  return useContext(SidebarContext)
+}
 
 interface NavItem {
   label: string
@@ -106,6 +126,7 @@ export function Sidebar() {
   const { profile, role } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+  const { open, setOpen } = useSidebar()
 
   const navItems =
     role === 'admin' ? adminNav : role === 'teacher' ? teacherNav : studentNav
@@ -116,13 +137,28 @@ export function Sidebar() {
     router.push('/login')
   }
 
-  return (
-    <aside className="w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col h-screen sticky top-0">
+  function handleNavClick() {
+    // Close drawer on mobile after navigation
+    setOpen(false)
+  }
+
+  const sidebarContent = (
+    <div className="flex flex-col h-full">
       {/* Brand */}
-      <div className="px-6 py-5 border-b border-zinc-800">
+      <div className="px-6 py-5 border-b border-zinc-800 flex items-center justify-between">
         <span className="text-white text-xl font-black tracking-tight">
           Edu<span className="text-indigo-400">Track</span>
         </span>
+        {/* Close button — mobile only */}
+        <button
+          onClick={() => setOpen(false)}
+          className="md:hidden text-zinc-500 hover:text-white transition p-1 rounded-lg hover:bg-zinc-800"
+          aria-label="Close menu"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       {/* Nav */}
@@ -133,6 +169,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={handleNavClick}
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 ${active
@@ -169,6 +206,36 @@ export function Sidebar() {
           Sign out
         </button>
       </div>
-    </aside>
+    </div>
+  )
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-64 bg-zinc-950 border-r border-zinc-800 flex-col h-screen sticky top-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={`
+          fixed inset-y-0 left-0 z-50 w-72 bg-zinc-950 border-r border-zinc-800 flex flex-col
+          transform transition-transform duration-300 ease-in-out md:hidden
+          ${open ? 'translate-x-0' : '-translate-x-full'}
+        `}
+        aria-label="Navigation"
+      >
+        {sidebarContent}
+      </aside>
+    </>
   )
 }

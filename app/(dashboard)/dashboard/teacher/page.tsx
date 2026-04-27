@@ -33,7 +33,7 @@ export default function TeacherDashboard() {
         }
       />
 
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-8 space-y-8">
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatsCard

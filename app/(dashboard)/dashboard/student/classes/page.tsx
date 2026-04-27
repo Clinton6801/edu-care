@@ -15,7 +15,7 @@ export default function StudentClassesPage() {
     <div>
       <Topbar title="My Classes" subtitle="All your enrolled classes in one place." />
 
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-8 space-y-8">
         {/* Join class */}
         <Card>
           <h2 className="text-sm font-bold text-white mb-4">Join a Class</h2>
