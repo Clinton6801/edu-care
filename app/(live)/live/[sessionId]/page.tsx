@@ -18,7 +18,41 @@ export default function LiveSessionPage({ params }: { params: Promise<{ sessionI
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const [handRaised, setHandRaised] = useState(false)
+  const [meetingToken, setMeetingToken] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Fetch a Daily meeting token once the session and profile are loaded
+  useEffect(() => {
+    if (!session?.dailyRoomUrl || !profile) return
+    // Extract room name from the URL (last path segment)
+    const roomName = session.dailyRoomUrl.split('/').pop()
+    if (!roomName) return
+
+    async function fetchToken() {
+      try {
+        const idToken = await (await import('@/lib/firebase/auth')).auth.currentUser?.getIdToken()
+        const res = await fetch('/api/daily/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({
+            roomName,
+            isOwner: profile!.role === 'teacher',
+            userName: profile!.displayName,
+          }),
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setMeetingToken(data.token)
+        }
+      } catch (err) {
+        console.error('Failed to fetch Daily token:', err)
+      }
+    }
+    fetchToken()
+  }, [session?.dailyRoomUrl, profile])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -109,7 +143,7 @@ export default function LiveSessionPage({ params }: { params: Promise<{ sessionI
         <div className="flex-1 flex flex-col bg-zinc-950">
           {session.dailyRoomUrl ? (
             <iframe
-              src={session.dailyRoomUrl}
+              src={meetingToken ? `${session.dailyRoomUrl}?t=${meetingToken}` : session.dailyRoomUrl}
               allow="camera; microphone; fullscreen; speaker; display-capture"
               className="flex-1 w-full border-0"
             />

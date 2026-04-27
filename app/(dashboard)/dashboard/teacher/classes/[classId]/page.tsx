@@ -17,6 +17,7 @@ import {
 import { Class, Assignment, LiveSession } from '@/types'
 import { useState, useEffect, use } from 'react'
 import { Timestamp } from 'firebase/firestore'
+import { auth } from '@/lib/firebase/auth'
 import Link from 'next/link'
 
 type Tab = 'overview' | 'assignments' | 'sessions'
@@ -118,9 +119,36 @@ export default function TeacherClassDetailPage({ params }: { params: Promise<{ c
 
   async function handleGoLive(session: LiveSession) {
     setStartingSession(session.id)
-    await updateLiveSession(session.id, { status: 'live' })
-    setSessions(prev => prev.map(s => s.id === session.id ? { ...s, status: 'live' } : s))
-    setStartingSession(null)
+    try {
+      // 1. Get the teacher's Firebase ID token to authenticate the API call
+      const idToken = await auth.currentUser?.getIdToken()
+
+      // 2. Create a Daily.co room for this session
+      const roomRes = await fetch('/api/daily/create-room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ sessionId: session.id }),
+      })
+
+      let dailyRoomUrl = ''
+      if (roomRes.ok) {
+        const { url } = await roomRes.json()
+        dailyRoomUrl = url
+      } else {
+        console.error('Failed to create Daily room — going live without video')
+      }
+
+      // 3. Update Firestore: set status to live and store the room URL
+      await updateLiveSession(session.id, { status: 'live', dailyRoomUrl })
+      setSessions(prev =>
+        prev.map(s => s.id === session.id ? { ...s, status: 'live', dailyRoomUrl } : s)
+      )
+    } finally {
+      setStartingSession(null)
+    }
   }
 
   async function handleEndSession(session: LiveSession) {
