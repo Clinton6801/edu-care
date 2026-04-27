@@ -1,0 +1,102 @@
+'use client'
+
+import { useAuth } from '@/hooks/useAuth'
+import { Topbar } from '@/components/layout/Topbar'
+import { StatsCard } from '@/components/dashboard/StatsCard'
+import { Card, CardHeader, CardTitle } from '@/components/ui/Card'
+import Link from 'next/link'
+
+export default function AdminDashboard() {
+  const { profile } = useAuth()
+  const firstName = profile?.displayName?.split(' ')[0] ?? 'Admin'
+
+  return (
+    <div>
+      <Topbar
+        title={`Admin Dashboard`}
+        subtitle={`Welcome back, ${firstName}. Here's your school overview.`}
+      />
+
+      <div className="p-8 space-y-8">
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard
+            label="Total Users"
+            value="—"
+            color="indigo"
+            icon={
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            }
+          />
+          <StatsCard
+            label="Total Classes"
+            value="—"
+            color="emerald"
+            icon={
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            }
+          />
+          <StatsCard
+            label="Assignments"
+            value="—"
+            color="amber"
+            icon={
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            }
+          />
+          <StatsCard
+            label="Live Sessions"
+            value="—"
+            color="red"
+            icon={
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            }
+          />
+        </div>
+
+        {/* Quick links */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link href="/dashboard/admin/users">
+            <Card className="hover:border-indigo-500/40 transition-all cursor-pointer group">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-indigo-600/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white group-hover:text-indigo-300 transition">Manage Users</h3>
+                  <p className="text-xs text-zinc-500 mt-0.5">View and manage all students, teachers, and admins</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/admin/classes">
+            <Card className="hover:border-indigo-500/40 transition-all cursor-pointer group">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-600/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition">All Classes</h3>
+                  <p className="text-xs text-zinc-500 mt-0.5">View all classes across the school</p>
+                </div>
+              </div>
+            </Card>
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
