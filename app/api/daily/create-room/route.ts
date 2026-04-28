@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminAuth } from '@/lib/firebase/admin'
 
 const DAILY_API_KEY = process.env.DAILY_API_KEY!
-const DAILY_DOMAIN = process.env.DAILY_DOMAIN!
 
 export async function POST(req: NextRequest) {
   // Verify the caller is an authenticated teacher
